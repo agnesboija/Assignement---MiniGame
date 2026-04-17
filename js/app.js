@@ -6,22 +6,21 @@
 // Variables
 let score = 0;
 let timeleft = 60;
-
+let gameStarted = false;
 
 // HTML DOM-functions --> hur hittar jag dessa items
-const button = document.getElementById('knapp1');
+const button1 = document.getElementById('button1');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
 
 
 // UI Functions & Events (user intercept?)
-button.addEventListener('click', () => {
+button1.addEventListener('click', () => {
   increaseScore(); // Vad som händer när jag klickar
+  if (!gameStarted) {
+    startGame();
+  }
 })
-
-
-// TODO: Start only when "Click me" is clicked
-setInterval(countdown, 1000); // countdown timer, en gång varje sekund
 
 
 // Functions
@@ -35,7 +34,14 @@ function countdown() {
   timeleft--;
   console.log(timeleft);
   timerDisplay.innerText = timeleft;
-  // TODO: Stop timer at the end. 
+  // TODO: Stop timer at the end.
 }
 
+function startGame() {
+  setInterval(countdown, 1000); // countdown timer, en gång varje sekund
+gameStarted = true;
+}
 
+function endGame() {
+
+}
