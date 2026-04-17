@@ -8,7 +8,7 @@ let score = 0;
 let timeleft = 60;
 let gameStarted = false;
 let gameEnded = false;
-
+let interval = null;
 
 // HTML DOM-functions --> hur hittar jag dessa items
 const button1 = document.getElementById('button1');
@@ -27,7 +27,6 @@ button1.addEventListener('click', () => {
   }
 })
 
-
 // Functions
 function increaseScore() {
   score++; // Varje klick blir + (börjar från 0 iom score = 0)
@@ -39,6 +38,7 @@ function countdown() {
   timeleft--;
   console.log(timeleft);
   timerDisplay.innerText = timeleft;
+
   if (timeleft <= 0) {
     timerDisplay.innerText = 0;
     endGame();
@@ -46,10 +46,11 @@ function countdown() {
 }
 
 function startGame() {
-  setInterval(countdown, 1000); // countdown timer, en gång varje sekund
+ interval =  setInterval(countdown, 1000); // countdown timer, en gång varje sekund
 gameStarted = true;
 }
 
 function endGame() {
   gameEnded = true;
+  clearInterval(interval);
 }
