@@ -1,20 +1,28 @@
 // Click a button to earn points so that i can increase my score
 // See my current score during the game so that i know how well i am doing
-// See a countdown timer - setIntervall function
+// See a countdown timer - setInterval() function
 
 
 // Variables
 let score = 0;
+let timeleft = 60;
+
 
 // HTML DOM-functions --> hur hittar jag dessa items
 const button = document.getElementById('knapp1');
 const scoreDisplay = document.getElementById('scoreDisplay');
+const timerDisplay = document.getElementById('timerDisplay');
 
 
-// UI Functions (user intercept?)
+// UI Functions & Events (user intercept?)
 button.addEventListener('click', () => {
   increaseScore(); // Vad som händer när jag klickar
 })
+
+
+// TODO: Start only when "Click me" is clicked
+setInterval(countdown, 1000); // countdown timer, en gång varje sekund
+
 
 // Functions
 function increaseScore() {
@@ -22,4 +30,12 @@ function increaseScore() {
   scoreDisplay.innerText = score;
 
 }
+
+function countdown() {
+  timeleft--;
+  console.log(timeleft);
+  timerDisplay.innerText = timeleft;
+  // TODO: Stop timer at the end. 
+}
+
 
