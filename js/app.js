@@ -7,6 +7,8 @@
 let score = 0;
 let timeleft = 60;
 let gameStarted = false;
+let gameEnded = false;
+
 
 // HTML DOM-functions --> hur hittar jag dessa items
 const button1 = document.getElementById('button1');
@@ -16,7 +18,10 @@ const timerDisplay = document.getElementById('timerDisplay');
 
 // UI Functions & Events (user intercept?)
 button1.addEventListener('click', () => {
-  increaseScore(); // Vad som händer när jag klickar
+  if (!gameEnded) {
+    increaseScore();
+  }
+
   if (!gameStarted) {
     startGame();
   }
@@ -34,7 +39,10 @@ function countdown() {
   timeleft--;
   console.log(timeleft);
   timerDisplay.innerText = timeleft;
-  // TODO: Stop timer at the end.
+  if (timeleft <= 0) {
+    timerDisplay.innerText = 0;
+    endGame();
+  }
 }
 
 function startGame() {
@@ -43,5 +51,5 @@ gameStarted = true;
 }
 
 function endGame() {
-
+  gameEnded = true;
 }
