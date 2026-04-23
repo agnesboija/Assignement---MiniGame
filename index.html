@@ -18,18 +18,35 @@
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon.png">
 
-  <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#fafafa">
 </head>
 
 <body>
 
   <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
+  <p> Agge B's MiniGame! </p>
 
   <p id = "scoreDisplay">0</p>
   <p id = "timerDisplay">60</p>
+
   <button id = "button1"> Knapp </button>
+
+
+  <label id = "label1" for = "name" > Name:  </label>
+  <input
+    type = "text"
+    id = "name"
+    name= "name"
+    required
+    minlength="3"
+    maxlength="10"
+    size="10" />
+  <button id = "button2"> Submit Highscore </button>
+
+  <p id = "finalMessage"></p>
+
+  <h2>Scoreboard</h2>
+  <ol id = "scoreboardList"></ol>
 
   <script src="js/app.js"></script>
 

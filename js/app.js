@@ -5,18 +5,27 @@
 
 // Variables
 let score = 0;
-let timeleft = 60;
+let timeLeft = 60;
 let gameStarted = false;
 let gameEnded = false;
 let interval = null;
 
 // HTML DOM-functions --> hur hittar jag dessa items
 const button1 = document.getElementById('button1');
+const button2 = document.getElementById('button2');
 const scoreDisplay = document.getElementById('scoreDisplay');
 const timerDisplay = document.getElementById('timerDisplay');
+const input1 = document.getElementById('name');
+const label1 = document.getElementById('label1');
+const finalMessage = document.getElementById('finalMessage');
+const scoreboardList = document.getElementById('scoreboardList');
 
+// Hide elements from start
+input1.style.display = "none";
+label1.style.display = "none";
+button2.style.display = "none";
 
-// UI Functions & Events (user intercept?)
+// Events
 button1.addEventListener('click', () => {
   if (!gameEnded) {
     increaseScore();
@@ -25,32 +34,93 @@ button1.addEventListener('click', () => {
   if (!gameStarted) {
     startGame();
   }
-})
+});
+
+button2.addEventListener('click', submitHighscore);
 
 // Functions
 function increaseScore() {
-  score++; // Varje klick blir + (börjar från 0 iom score = 0)
+  score++;
   scoreDisplay.innerText = score;
-
 }
 
 function countdown() {
-  timeleft--;
-  console.log(timeleft);
-  timerDisplay.innerText = timeleft;
+  timeLeft--;
+  timerDisplay.innerText = timeLeft;
 
-  if (timeleft <= 0) {
+  if (timeLeft <= 0) {
     timerDisplay.innerText = 0;
     endGame();
   }
 }
 
 function startGame() {
- interval =  setInterval(countdown, 1000); // countdown timer, en gång varje sekund
-gameStarted = true;
+  interval = setInterval(countdown, 1000);
+  gameStarted = true;
 }
 
 function endGame() {
   gameEnded = true;
   clearInterval(interval);
+
+  button1.style.display = "none";
+  input1.style.display = "block";
+  label1.style.display = "block";
+  button2.style.display = "block";
+
+ finalMessage.innerText = "GAME OVER! Your final score is: " + score;
 }
+
+async function submitHighscore() {
+  try {
+  const response = await fetch("https://hooks.zapier.com/hooks/catch/8338993/ujs9jj9/", {
+    method: "POST",
+    body: JSON.stringify({
+      name: input1.value,
+      score: score
+    }),
+  });
+
+if (response.ok) {
+  finalMessage.innerText =
+    "GAME OVER! Your final score is: " + score + " - Your highscore was saved successfully!";
+
+  setTimeout(getScoreBoardData, 1000);
+}
+
+else {
+  finalMessage.innerText =
+    "GAME OVER! Your final score is: " + score + " - Could not save your highscore.";
+}
+  } catch (error) {
+    console.error(error);
+
+    finalMessage.innerText =
+      "GAME OVER! Your final score is: " + score + " - Error when saving your highscore.";
+  }
+}
+
+function getScoreBoardData() {
+  const url = 'https://script.google.com/macros/s/AKfycbys5aEPMvNCutyhNYYCcQcCjzsi2UtqNspmKyCH-AicJxJbCJMrAoT0LUaYaXhTWA8n/exec';
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        scoreboardList.innerHTML = "";
+
+      data.sort((a, b) => b.score - a.score);
+
+      data.forEach(player => {
+        const li = document.createElement('li');
+        li.innerText = player.name + " - " + player.score;
+        scoreboardList.appendChild(li);
+      });
+    })
+    .catch(error => {
+      console.error("Fetch Error:", error);
+      scoreboardList.innerHTML = "<li>Could not load scoreboard.</li>";
+    });
+}
+
+getScoreBoardData();
+
