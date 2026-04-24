@@ -3,14 +3,16 @@
 // See a countdown timer - setInterval() function
 
 
-// Variables
+// Variables - De här variablerna håller koll på spelets tillstånd:
 let score = 0;
 let timeLeft = 60;
 let gameStarted = false;
 let gameEnded = false;
 let interval = null;
 
-// HTML DOM-functions --> hur hittar jag dessa items
+
+// HTML DOM-functions --> hur hittar jag dessa items.
+// Jag hämtar elementen från HTML så att jag kan ändra text, visa/dölja saker & lägga till data på sidan.
 const button1 = document.getElementById('button1');
 const button2 = document.getElementById('button2');
 const scoreDisplay = document.getElementById('scoreDisplay');
@@ -20,12 +22,16 @@ const label1 = document.getElementById('label1');
 const finalMessage = document.getElementById('finalMessage');
 const scoreboardList = document.getElementById('scoreboardList');
 
-// Hide elements from start
+// Det här gör att namnfältet och submit-knappen inte syns när spelet startar.
+// Jag vill att spelaren ska spela klart. Efter det ska man kunna skriva namn & skicka in sin score.
 input1.style.display = "none";
 label1.style.display = "none";
 button2.style.display = "none";
 
 // Events
+// Jag använder event listeners för att reagera på användarens klick.
+// Button 1: om spelet inte är slut så ökas poängen, om spelet inte startat än startas timern.
+// Button 2: när man klickar på submit körs submitHighscore
 button1.addEventListener('click', () => {
   if (!gameEnded) {
     increaseScore();
@@ -38,12 +44,13 @@ button1.addEventListener('click', () => {
 
 button2.addEventListener('click', submitHighscore);
 
-// Functions
+// Varje klick ger ger ett poäng och sedan uppdateras score-displayen direkt i DOM:en.
 function increaseScore() {
   score++;
   scoreDisplay.innerText = score;
 }
 
+// Countdown körs varje sekund och monskar tiden. När tiden är slut anropas endGame.
 function countdown() {
   timeLeft--;
   timerDisplay.innerText = timeLeft;
@@ -54,11 +61,13 @@ function countdown() {
   }
 }
 
+// Spelet startar första gången man klickar och sätter igång timern med setInterval.
 function startGame() {
   interval = setInterval(countdown, 1000);
   gameStarted = true;
 }
 
+//När tiden är slut stoppas timern, spelknappen göms och fältet för namn + knappen för att skicka highscore.visas.
 function endGame() {
   gameEnded = true;
   clearInterval(interval);
@@ -68,30 +77,31 @@ function endGame() {
   label1.style.display = "block";
   button2.style.display = "block";
 
- finalMessage.innerText = "GAME OVER! Your final score is: " + score;
+  finalMessage.innerText = "GAME OVER! Your final score is: " + score;
 }
 
+// Om requesten lyckas visas ett bekräftelsemeddelande & hämtar leaderboarden.
+// Jag använder try/catch för felhantering så att ett tydligt meddelande visas om något går fel.
 async function submitHighscore() {
   try {
-  const response = await fetch("https://hooks.zapier.com/hooks/catch/8338993/ujs9jj9/", {
-    method: "POST",
-    body: JSON.stringify({
-      name: input1.value,
-      score: score
+    const response = await fetch("https://hooks.zapier.com/hooks/catch/8338993/ujs9jj9/", {
+      method: "POST",
+      body: JSON.stringify({
+        name: input1.value,
+        score: score
     }),
   });
 
-if (response.ok) {
-  finalMessage.innerText =
-    "GAME OVER! Your final score is: " + score + " - Your highscore was saved successfully!";
+    if (response.ok) {
+      finalMessage.innerText =
+        "GAME OVER! Your final score is: " + score + " - Your highscore was saved successfully!";
 
-  setTimeout(getScoreBoardData, 1000);
-}
+      getScoreBoardData();
 
-else {
-  finalMessage.innerText =
-    "GAME OVER! Your final score is: " + score + " - Could not save your highscore.";
-}
+    } else {
+      finalMessage.innerText =
+        "GAME OVER! Your final score is: " + score + " - Could not save your highscore.";
+    }
   } catch (error) {
     console.error(error);
 
@@ -100,17 +110,19 @@ else {
   }
 }
 
+// Här hämtas leaderboarden, sorterar resultaten från högst till lägst och skriver ut dom som en numrerad lista på sidan.
+// Om leaderboarden inte kan hämtas visar jag ett felmedddelande istället.
 function getScoreBoardData() {
   const url = 'https://script.google.com/macros/s/AKfycbys5aEPMvNCutyhNYYCcQcCjzsi2UtqNspmKyCH-AicJxJbCJMrAoT0LUaYaXhTWA8n/exec';
 
   fetch(url)
     .then(response => response.json())
     .then(data => {
-        scoreboardList.innerHTML = "";
+      scoreboardList.innerHTML = "";
 
       data.sort((a, b) => b.score - a.score);
 
-      data.forEach(player => {
+      data.slice(0, 20).forEach(player => {
         const li = document.createElement('li');
         li.innerText = player.name + " - " + player.score;
         scoreboardList.appendChild(li);
@@ -122,5 +134,6 @@ function getScoreBoardData() {
     });
 }
 
+// Jag kör denna direkt när sidan öppnas så att leaderboarden (nästan) syns direkt.
 getScoreBoardData();
 
